@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 120" width="480" height="120">
+  <!-- Background -->
+  <rect width="480" height="120" fill="#FFE500" rx="0"/>
+  <!-- Black border outline -->
+  <rect x="0" y="0" width="480" height="120" fill="none" stroke="#000000" stroke-width="4"/>
+
+  <!-- Icon: Three overlapping circles (subscriptions) -->
+  <!-- Circle 1 (left, filled yellow outline black) -->
+  <circle cx="40" cy="60" r="28" fill="#FFE500" stroke="#000000" stroke-width="4"/>
+  <circle cx="40" cy="60" r="14" fill="#000000"/>
+  <circle cx="40" cy="60" r="7" fill="#FFE500"/>
+
+  <!-- Circle 2 (middle, outline only) -->
+  <circle cx="72" cy="45" r="22" fill="#ffffff" stroke="#000000" stroke-width="4"/>
+  <circle cx="72" cy="45" r="10" fill="#000000"/>
+
+  <!-- Circle 3 (right, filled black) -->
+  <circle cx="98" cy="70" r="18" fill="#000000" stroke="#000000" stroke-width="4"/>
+  <circle cx="98" cy="70" r="7" fill="#FFE500"/>
+
+  <!-- Decorative corner squares (neo-brutalism) -->
+  <rect x="4" y="4" width="8" height="8" fill="#000000"/>
+  <rect x="468" y="4" width="8" height="8" fill="#000000"/>
+  <rect x="4" y="108" width="8" height="8" fill="#000000"/>
+  <rect x="468" y="108" width="8" height="8" fill="#000000"/>
+
+  <!-- Bold shadow block behind text (neo-brutalism offset) -->
+  <rect x="136" y="26" width="328" height="68" fill="#000000" rx="0"/>
+  <rect x="132" y="22" width="328" height="68" fill="#FFE500" stroke="#000000" stroke-width="3" rx="0"/>
+
+  <!-- "SUB" text -->
+  <text x="148" y="64" font-family="'Arial Black', 'Impact', sans-serif" font-weight="900" font-size="34" fill="#000000" letter-spacing="-1">SUB</text>
+  <!-- Accent bar -->
+  <rect x="148" y="68" width="68" height="4" fill="#000000"/>
+
+  <!-- "TRACKER" text -->
+  <text x="220" y="64" font-family="'Arial Black', 'Impact', sans-serif" font-weight="900" font-size="34" fill="#000000" letter-spacing="-1">TRACKER</text>
+
+  <!-- Tagline -->
+  <text x="148" y="84" font-family="'Arial', monospace" font-weight="700" font-size="11" fill="#000000" letter-spacing="3">SUBSCRIPTION MANAGEMENT</text>
+</svg>

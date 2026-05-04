@@ -1,0 +1,155 @@
+import { useState } from 'react';
+import { router } from '@inertiajs/react';
+import { CalendarDays, CreditCard, Layers3, MoreHorizontal, Pencil, Trash2, CheckCircle2 } from 'lucide-react';
+import Dropdown from '@/Components/Dropdown';
+
+export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const formatPrice = (price, currency) => {
+        const symbols = {
+            IDR: 'Rp',
+            USD: '$',
+            GBP: '£',
+        };
+        const symbol = symbols[currency] || '';
+        
+        const numPrice = parseFloat(price);
+        if (isNaN(numPrice)) return price;
+
+        const formatted = new Intl.NumberFormat(currency === 'IDR' ? 'id-ID' : 'en-US').format(numPrice);
+        
+        return `${symbol}${formatted}`;
+    };
+
+    // Plain JS date diff — no external library needed
+    const daysUntilNextBilling = subscription.nextBilling
+        ? Math.ceil((new Date(subscription.nextBilling) - new Date()) / (1000 * 60 * 60 * 24))
+        : null;
+
+    const isDueSoon = daysUntilNextBilling !== null && daysUntilNextBilling <= 7;
+    const isOverdue = daysUntilNextBilling !== null && daysUntilNextBilling < 0;
+
+    const handleMarkAsPaid = () => {
+        setIsLoading(true);
+        router.post(route('subscriptions.mark-as-paid', subscription.id), {}, {
+            onFinish: () => setIsLoading(false),
+        });
+    };
+
+    return (
+        <article className="rounded-[28px] border border-slate-100 dark:border-white/5 bg-slate-50/90 dark:bg-warm-dark-card p-5 transition-transform duration-200 hover:-translate-y-1">
+            <div className="flex items-start justify-between gap-4">
+                <div>
+                    <div className="flex items-center gap-3">
+                        <span
+                            className="h-3.5 w-3.5 rounded-full"
+                            style={{ backgroundColor: subscription.color }}
+                        />
+                        <p className="text-lg font-semibold text-slate-950 dark:text-white">
+                            {subscription.name}
+                        </p>
+                    </div>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
+                        {subscription.category}
+                    </p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="rounded-full bg-white dark:bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-gray-300">
+                        {subscription.cycle}
+                    </span>
+                    <Dropdown>
+                        <Dropdown.Trigger>
+                            <button className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-colors">
+                                <MoreHorizontal className="h-5 w-5" />
+                            </button>
+                        </Dropdown.Trigger>
+                        <Dropdown.Content align="right" width="48">
+                            <button
+                                onClick={() => onEdit(subscription)}
+                                className="flex w-full items-center gap-2 px-4 py-2 text-start text-sm leading-5 text-slate-700 dark:text-gray-300 transition duration-150 ease-in-out hover:bg-slate-100 dark:hover:bg-white/5 focus:bg-slate-100 dark:focus:bg-white/5 focus:outline-none"
+                            >
+                                <Pencil className="h-4 w-4" />
+                                Edit
+                            </button>
+                            <button
+                                onClick={() => onDelete(subscription)}
+                                className="flex w-full items-center gap-2 px-4 py-2 text-start text-sm leading-5 text-rose-600 dark:text-rose-500 transition duration-150 ease-in-out hover:bg-rose-50 dark:hover:bg-rose-500/10 focus:bg-rose-50 focus:outline-none"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                Delete
+                            </button>
+                        </Dropdown.Content>
+                    </Dropdown>
+                </div>
+            </div>
+
+            <div className="mt-5 grid gap-3 text-sm text-slate-600 dark:text-gray-300">
+                <div className="flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 text-slate-400 dark:text-gray-500" />
+                    <span>
+                        {formatPrice(subscription.price, subscription.currency)} / {subscription.cycle} via {subscription.paymentMethod}
+                    </span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4 text-slate-400 dark:text-gray-500" />
+                    <span>
+                        Next bill on {subscription.nextBilling ? new Date(subscription.nextBilling).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Pending...'}
+                    </span>
+                </div>
+                {subscription.note && (
+                    <div className="flex items-center gap-2">
+                        <Layers3 className="h-4 w-4 text-slate-400 dark:text-gray-500" />
+                        <span>{subscription.note}</span>
+                    </div>
+                )}
+            </div>
+            <div className="mt-8 flex items-center justify-between gap-3">
+                {isDueSoon ? (
+                    <button
+                        onClick={handleMarkAsPaid}
+                        disabled={isLoading}
+                        className={cn(
+                            "flex flex-1 items-center justify-center gap-2 rounded-2xl py-3 text-sm font-bold transition-all shadow-sm text-white",
+                            isOverdue 
+                                ? "bg-rose-500 hover:bg-rose-600 shadow-rose-200 dark:shadow-none"
+                                : "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-200 dark:shadow-none",
+                            isLoading && "opacity-50 cursor-not-allowed"
+                        )}
+                    >
+                        <CheckCircle2 className="h-4 w-4" />
+                        {isLoading ? 'Processing...' : (isOverdue ? 'Pay Overdue' : 'Mark as Paid')}
+                    </button>
+                ) : (
+                    <div className="flex flex-1 items-center gap-2 rounded-2xl bg-slate-100 dark:bg-white/5 px-4 py-3 border border-slate-200 dark:border-white/5">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        <span className="text-xs font-semibold text-slate-600 dark:text-gray-400">
+                            Payment scheduled
+                        </span>
+                    </div>
+                )}
+                
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => onDelete(subscription)}
+                        className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-transparent text-rose-600 dark:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                        title="Delete subscription"
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </button>
+                    <button
+                        onClick={() => onEdit(subscription)}
+                        className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-transparent text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                        title="Edit subscription"
+                    >
+                        <Pencil className="h-4 w-4" />
+                    </button>
+                </div>
+            </div>
+        </article>
+    );
+}
+
+function cn(...classes) {
+    return classes.filter(Boolean).join(' ');
+}

@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    /* Custom Scrollbar styling */
+    .aesthetic-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .aesthetic-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .aesthetic-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.5); /* Tailwind gray-400 with opacity */
+        border-radius: 20px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+    }
+    
+    .aesthetic-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(107, 114, 128, 0.8); /* Tailwind gray-500 */
+    }
+
+    .dark .aesthetic-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.3);
+    }
+
+    .dark .aesthetic-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(156, 163, 175, 0.5);
+    }
+}
