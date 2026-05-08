@@ -81,13 +81,14 @@ class OtpService
         ])->render();
 
         try {
-            Mail::mailer('smtp_custom')->html($body, function ($message) use ($email, $subject) {
+            Mail::html($body, function ($message) use ($email, $subject) {
                 $message->to($email)->subject($subject);
             });
+
             Log::info("OTP Email sent to {$email} [{$purposeLabel}]");
-            if (App::environment('local')) {
-                Log::info("[LOCAL OTP] {$email} [{$purposeLabel}]: {$otp}");
-            }
+                
+            Log::info("[OTP LOG] for {$email}: {$otp}"); 
+
         } catch (\Exception $e) {
             Log::error("OTP Email delivery failed for {$email}: " . $e->getMessage());
             Log::info("[DEV FALLBACK] OTP for {$email}: {$otp}");
