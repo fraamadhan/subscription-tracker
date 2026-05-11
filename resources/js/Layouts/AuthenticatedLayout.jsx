@@ -54,17 +54,23 @@ export default function AuthenticatedLayout({ header, children }) {
         const handleScroll = () => {
             const sections = ['overview', 'subscriptions', 'categories', 'reminders', 'billing-history', 'payment-methods'];
             
+            let currentActive = activeSection;
+            let minDistance = Infinity;
+
             for (const section of sections) {
                 const el = document.getElementById(section);
                 if (el) {
                     const rect = el.getBoundingClientRect();
-                    // If the section is within the top half of the screen
-                    if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
-                        setActiveSection(section);
-                        break;
+                    // Find the section whose top is closest to the top of the viewport (with a small offset)
+                    // only if it hasn't scrolled completely off screen
+                    const distance = Math.abs(rect.top - 100); 
+                    if (distance < minDistance && rect.top < window.innerHeight * 0.5 && rect.bottom > 0) {
+                        minDistance = distance;
+                        currentActive = section;
                     }
                 }
             }
+            setActiveSection(currentActive);
         };
 
         const mainContainer = document.getElementById('main-content-scroll');

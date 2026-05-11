@@ -256,7 +256,7 @@ export default function Dashboard({
                 />
             </Head>
 
-            <div className="mx-auto max-w-7xl space-y-6">
+            <div className="mx-auto max-w-7xl space-y-16">
                 <section
                     id="overview"
                     className="overflow-hidden rounded-[36px] border border-white/70 bg-[linear-gradient(135deg,_rgba(15,23,42,0.96)_0%,_rgba(30,41,59,0.96)_45%,_rgba(120,53,15,0.92)_100%)] px-5 py-6 text-white shadow-[0_35px_100px_-40px_rgba(15,23,42,0.65)] md:px-8 md:py-8"
