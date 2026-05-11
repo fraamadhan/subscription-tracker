@@ -511,87 +511,85 @@ export default function Dashboard({
                     )}
                 </SectionPanel>
 
-                <div className="grid gap-6 lg:grid-cols-2">
-                    {/* 2. CATEGORIES BREAKDOWN */}
-                    <SectionPanel
-                        id="categories"
-                        eyebrow="Analytics"
-                        title="Spending breakdown"
-                        description="Spending across different categories."
-                        actions={
-                            <div className="flex items-center gap-3">
-                                <div className="flex items-center gap-1 rounded-2xl border border-slate-200 dark:border-white/10 p-1 bg-slate-50 dark:bg-white/5">
-                                    {['IDR', 'USD', 'GBP'].map((curr) => (
-                                        <button
-                                            key={curr}
-                                            onClick={() => setDisplayCurrency(curr)}
-                                            className={cn(
-                                                "px-3 py-1.5 text-[10px] font-bold rounded-xl transition-all",
-                                                displayCurrency === curr
-                                                    ? "bg-white dark:bg-white/10 text-amber-600 dark:text-amber-500 shadow-sm"
-                                                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-                                            )}
-                                        >
-                                            {curr}
-                                        </button>
-                                    ))}
-                                </div>
-                                <button
-                                    onClick={() => setIsCategoryModalOpen(true)}
-                                    className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-white/10 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-gray-300 transition hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-white/10"
-                                >
-                                    <Plus className="h-4 w-4" />
-                                    Manage
-                                </button>
+                {/* 2. CATEGORIES BREAKDOWN */}
+                <SectionPanel
+                    id="categories"
+                    eyebrow="Analytics"
+                    title="Spending breakdown"
+                    description="Spending across different categories."
+                    actions={
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-1 rounded-2xl border border-slate-200 dark:border-white/10 p-1 bg-slate-50 dark:bg-white/5">
+                                {['IDR', 'USD', 'GBP'].map((curr) => (
+                                    <button
+                                        key={curr}
+                                        onClick={() => setDisplayCurrency(curr)}
+                                        className={cn(
+                                            "px-3 py-1.5 text-[10px] font-bold rounded-xl transition-all",
+                                            displayCurrency === curr
+                                                ? "bg-white dark:bg-white/10 text-amber-600 dark:text-amber-500 shadow-sm"
+                                                : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                                        )}
+                                    >
+                                        {curr}
+                                    </button>
+                                ))}
                             </div>
-                        }
-                    >
-                        <div className="space-y-4">
-                            {categoryBreakdown.map((category) => (
-                                <div key={category.label}>
-                                    <div className="mb-2 flex items-center justify-between gap-4 text-sm">
-                                        <span className="font-medium text-slate-700 dark:text-gray-300">
-                                            {category.label}
-                                        </span>
-                                        <span className="text-slate-500 dark:text-gray-400">
-                                            {category.amount} • {category.coverage}
-                                        </span>
-                                    </div>
-                                    <div className="h-3 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
-                                        <div
-                                            className="h-3 rounded-full transition-all duration-500"
-                                            style={{ 
-                                                backgroundColor: category.color_hex,
-                                                width: category.width
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            ))}
+                            <button
+                                onClick={() => setIsCategoryModalOpen(true)}
+                                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-white/10 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-gray-300 transition hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-white/10"
+                            >
+                                <Plus className="h-4 w-4" />
+                                Manage
+                            </button>
                         </div>
-                    </SectionPanel>
-
-                    {/* 3. RENEWAL REMINDERS */}
-                    <SectionPanel
-                        id="reminders"
-                        eyebrow="Notifications"
-                        title="Upcoming renewals"
-                        description="Stay ahead of your subscription schedule."
-                    >
-                        <div className="space-y-4">
-                            {reminderMessages.map((message, index) => (
-                                <div
-                                    key={index}
-                                    className="rounded-[24px] border border-slate-100 dark:border-white/5 bg-slate-50/80 dark:bg-warm-dark/40 p-4 text-sm leading-6 text-slate-600 dark:text-gray-300"
-                                >
-                                    {message}
+                    }
+                >
+                    <div className="space-y-4">
+                        {categoryBreakdown.map((category) => (
+                            <div key={category.label}>
+                                <div className="mb-2 flex items-center justify-between gap-4 text-sm">
+                                    <span className="font-medium text-slate-700 dark:text-gray-300">
+                                        {category.label}
+                                    </span>
+                                    <span className="text-slate-500 dark:text-gray-400">
+                                        {category.amount} • {category.coverage}
+                                    </span>
                                 </div>
-                            ))}
-                        </div>
-                    </SectionPanel>
-                </div>
+                                <div className="h-3 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
+                                    <div
+                                        className="h-3 rounded-full transition-all duration-500"
+                                        style={{ 
+                                            backgroundColor: category.color_hex,
+                                            width: category.width
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </SectionPanel>
 
-                {/* 4. BILLING HISTORY - Full width or large span */}
+                {/* 3. RENEWAL REMINDERS */}
+                <SectionPanel
+                    id="reminders"
+                    eyebrow="Notifications"
+                    title="Upcoming renewals"
+                    description="Stay ahead of your subscription schedule."
+                >
+                    <div className="space-y-4">
+                        {reminderMessages.map((message, index) => (
+                            <div
+                                key={index}
+                                className="rounded-[24px] border border-slate-100 dark:border-white/5 bg-slate-50/80 dark:bg-warm-dark/40 p-4 text-sm leading-6 text-slate-600 dark:text-gray-300"
+                            >
+                                {message}
+                            </div>
+                        ))}
+                    </div>
+                </SectionPanel>
+
+                {/* 4. BILLING HISTORY */}
                 <SectionPanel
                     id="billing-history"
                     eyebrow="History"
