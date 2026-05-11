@@ -134,6 +134,7 @@ export default function Dashboard({
             billing_cycle: data.cycle,
             next_billing_date: data.nextBilling,
             color_hex: data.color,
+            notify_time: data.notifyTime,
         };
 
         if (selectedSubscription?.id) {
