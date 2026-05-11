@@ -15,10 +15,12 @@ import {
     Sun,
     Moon,
     HelpCircle,
+    MessageSquare,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Toast from "@/Components/Toast";
 import Onboarding from "@/Components/Dashboard/Onboarding";
+import FeedbackModal from "@/Components/Dashboard/FeedbackModal";
 import TimunWahyuLogo from "@/Components/TimunWahyuLogo";
 
 export default function AuthenticatedLayout({ header, children }) {
@@ -26,6 +28,8 @@ export default function AuthenticatedLayout({ header, children }) {
     const user = auth.user;
     const [showSidebar, setShowSidebar] = useState(false);
     const [onboardingOpen, setOnboardingOpen] = useState(false);
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState('overview');
     
     // Theme logic from AuthLayout
     const [theme, setTheme] = useState(
@@ -43,6 +47,34 @@ export default function AuthenticatedLayout({ header, children }) {
         localStorage.setItem('hasSeenOnboarding', 'true');
         setOnboardingOpen(false);
     };
+
+    useEffect(() => {
+        if (!route().current('dashboard')) return;
+
+        const handleScroll = () => {
+            const sections = ['overview', 'subscriptions', 'categories', 'reminders', 'billing-history', 'payment-methods'];
+            
+            for (const section of sections) {
+                const el = document.getElementById(section);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    // If the section is within the top half of the screen
+                    if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+                        setActiveSection(section);
+                        break;
+                    }
+                }
+            }
+        };
+
+        const mainContainer = document.getElementById('main-content-scroll');
+        if (mainContainer) {
+            mainContainer.addEventListener('scroll', handleScroll);
+            // Trigger once on mount
+            handleScroll();
+            return () => mainContainer.removeEventListener('scroll', handleScroll);
+        }
+    }, []);
 
     useEffect(() => {
         if (theme === 'dark') {
@@ -65,37 +97,42 @@ export default function AuthenticatedLayout({ header, children }) {
             description: "Financial cockpit",
             href: `${dashboardBase}#overview`,
             icon: LayoutDashboard,
-            active: route().current("dashboard"),
+            active: route().current("dashboard") && activeSection === 'overview',
         },
         {
             label: "Subscriptions",
             description: "Track active plans",
             href: `${dashboardBase}#subscriptions`,
             icon: CreditCard,
+            active: route().current("dashboard") && activeSection === 'subscriptions',
         },
         {
             label: "Categories",
             description: "Organize spending",
             href: `${dashboardBase}#categories`,
             icon: Tags,
+            active: route().current("dashboard") && activeSection === 'categories',
         },
         {
             label: "Reminders",
             description: "Stay ahead of renewals",
             href: `${dashboardBase}#reminders`,
             icon: BellRing,
+            active: route().current("dashboard") && activeSection === 'reminders',
         },
         {
             label: "Billing History",
             description: "Payment trail",
             href: `${dashboardBase}#billing-history`,
             icon: ReceiptText,
+            active: route().current("dashboard") && activeSection === 'billing-history',
         },
         {
             label: "Payment Methods",
             description: "Cards and wallets",
             href: `${dashboardBase}#payment-methods`,
             icon: WalletCards,
+            active: route().current("dashboard") && activeSection === 'payment-methods',
         },
         {
             label: "Profile",
@@ -105,6 +142,16 @@ export default function AuthenticatedLayout({ header, children }) {
             active: route().current("profile.edit"),
         },
     ];
+
+    if (user?.is_admin) {
+        navigation.push({
+            label: "User Feedbacks",
+            description: "View user feedback",
+            href: route("feedbacks.index"),
+            icon: HelpCircle,
+            active: route().current("feedbacks.index"),
+        });
+    }
 
     return (
         <div className={`h-screen overflow-hidden flex transition-colors duration-500 bg-paper dark:bg-warm-dark text-slate-950 dark:text-gray-100`}>
@@ -276,9 +323,16 @@ export default function AuthenticatedLayout({ header, children }) {
                 {/* THEME TOGGLE & HELP FOR DESKTOP */}
                 <div className="hidden xl:flex absolute top-6 right-10 z-20 items-center gap-3">
                     <button
+                        onClick={() => setFeedbackOpen(true)}
+                        className="p-2.5 rounded-full border border-gray-200 dark:border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-white/10 transition-colors shadow-sm"
+                        title="Send Feedback"
+                    >
+                        <MessageSquare className="w-5 h-5" />
+                    </button>
+                    <button
                         onClick={() => setOnboardingOpen(true)}
                         className="p-2.5 rounded-full border border-gray-200 dark:border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-white/10 transition-colors shadow-sm"
-                        aria-label="Show Tour"
+                        title="Show Tour"
                     >
                         <HelpCircle className="w-5 h-5" />
                     </button>
@@ -293,9 +347,10 @@ export default function AuthenticatedLayout({ header, children }) {
 
                 <Toast />
                 <Onboarding open={onboardingOpen} onClose={closeOnboarding} />
+                <FeedbackModal show={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
 
                 {/* DYNAMIC SCROLLING CONTENT */}
-                <main className="flex-1 overflow-y-auto aesthetic-scrollbar overscroll-contain px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+                <main id="main-content-scroll" className="flex-1 overflow-y-auto aesthetic-scrollbar overscroll-contain px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
                     {header && (
                         <header className="mb-8 rounded-[32px] border border-gray-200 dark:border-white/10 bg-white/80 dark:bg-warm-dark-card/60 px-6 py-6 shadow-[0_20px_50px_-20px_rgba(15,23,42,0.05)] dark:shadow-[0_20px_50px_-20px_rgba(0,0,0,0.5)] backdrop-blur xl:pr-24">
                             {header}

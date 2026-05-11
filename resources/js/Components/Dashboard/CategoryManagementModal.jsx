@@ -32,6 +32,8 @@ export default function CategoryManagementModal({
         '#3b82f6', // blue-500
         '#8b5cf6', // violet-500
         '#d946ef', // fuchsia-500
+        '#ffb6c1', // baby pink
+        '#89cff0', // baby blue
     ];
 
     const resetForm = () => {

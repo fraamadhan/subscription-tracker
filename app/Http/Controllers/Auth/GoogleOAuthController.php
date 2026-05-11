@@ -52,6 +52,19 @@ class GoogleOAuthController extends Controller
                 'avatar' => $googleUser->getAvatar(),
                 'password' => Hash::make(Str::random(40)),
             ]);
+
+            $user->categories()->createMany([
+                ['name' => 'Entertainment', 'color_hex' => '#ef4444'],
+                ['name' => 'Software', 'color_hex' => '#3b82f6'],
+                ['name' => 'Utilities', 'color_hex' => '#10b981'],
+                ['name' => 'Design', 'color_hex' => '#06b6d4'],
+            ]);
+
+            $user->paymentMethods()->createMany([
+                ['name' => 'BCA Visa'],
+                ['name' => 'GoPay'],
+                ['name' => 'Jago Virtual Card'],
+            ]);
         }
 
         Auth::login($user, true);

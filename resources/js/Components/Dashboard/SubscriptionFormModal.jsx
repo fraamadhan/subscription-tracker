@@ -29,6 +29,7 @@ export default function SubscriptionFormModal({
         nextBilling: '',
         note: '',
         color: '#f59e0b', // amber-500
+        notifyTime: '08:00',
     };
 
     const [data, setData] = useState(defaultData);
@@ -75,6 +76,8 @@ export default function SubscriptionFormModal({
         '#3b82f6', // blue-500
         '#8b5cf6', // violet-500
         '#d946ef', // fuchsia-500
+        '#ffb6c1', // baby pink
+        '#89cff0', // baby blue
     ];
 
     return (
@@ -188,14 +191,28 @@ export default function SubscriptionFormModal({
                         </div>
                     </div>
 
-                    <div>
-                        <InputLabel htmlFor="nextBilling" value="Next Billing Date" className="text-slate-700 dark:text-gray-300" />
-                        <DatePicker
-                            value={data.nextBilling}
-                            onChange={handleChange}
-                            className="mt-1"
-                        />
-                        <InputError message={errors.nextBilling} className="mt-2" />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <InputLabel htmlFor="nextBilling" value="Next Billing Date" className="text-slate-700 dark:text-gray-300" />
+                            <DatePicker
+                                value={data.nextBilling}
+                                onChange={handleChange}
+                                className="mt-1"
+                            />
+                            <InputError message={errors.nextBilling} className="mt-2" />
+                        </div>
+                        <div>
+                            <InputLabel htmlFor="notifyTime" value="Notify Time" className="text-slate-700 dark:text-gray-300" />
+                            <TextInput
+                                id="notifyTime"
+                                name="notifyTime"
+                                type="time"
+                                value={data.notifyTime}
+                                onChange={handleChange}
+                                className="mt-1 block w-full bg-white dark:bg-warm-dark-card border-slate-200 dark:border-white/10 dark:text-white"
+                            />
+                            <InputError message={errors.notifyTime} className="mt-2" />
+                        </div>
                     </div>
 
                     <div>

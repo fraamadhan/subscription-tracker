@@ -23,6 +23,7 @@ class SubscriptionController extends Controller
             'payment_method_id' => 'nullable|exists:payment_methods,id',
             'note' => 'nullable|string',
             'color_hex' => 'nullable|string|max:7',
+            'notify_time' => 'required|date_format:H:i',
         ]);
 
         Auth::user()->subscriptions()->create($validated);
@@ -44,6 +45,7 @@ class SubscriptionController extends Controller
             'payment_method_id' => 'nullable|exists:payment_methods,id',
             'note' => 'nullable|string',
             'color_hex' => 'nullable|string|max:7',
+            'notify_time' => 'required|date_format:H:i',
         ]);
 
         $subscription->update($validated);

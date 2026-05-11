@@ -30,11 +30,19 @@ class CheckRenewals extends Command
     public function handle()
     {
         $today = Carbon::today();
+        $currentTime = Carbon::now()->format('H:i');
 
         // 1. Overdue Subscriptions (past next_billing_date)
         $overdue = Subscription::with(['user', 'category', 'paymentMethod'])
             ->where('next_billing_date', '<', $today)
             ->where('is_active', true)
+            ->where(function ($query) use ($today, $currentTime) {
+                $query->whereRaw('LEFT(notify_time, 5) <= ?', [$currentTime])
+                      ->where(function ($q) use ($today) {
+                          $q->whereNull('last_notified_at')
+                            ->orWhere('last_notified_at', '<', $today);
+                      });
+            })
             ->get();
 
         foreach ($overdue as $sub) {
@@ -49,6 +57,13 @@ class CheckRenewals extends Command
                 $today->copy()->addDays(3)
             ])
             ->where('is_active', true)
+            ->where(function ($query) use ($today, $currentTime) {
+                $query->whereRaw('LEFT(notify_time, 5) <= ?', [$currentTime])
+                      ->where(function ($q) use ($today) {
+                          $q->whereNull('last_notified_at')
+                            ->orWhere('last_notified_at', '<', $today);
+                      });
+            })
             ->get();
 
         foreach ($upcoming as $sub) {
@@ -87,12 +102,14 @@ class CheckRenewals extends Command
                 'daysUntil'    => $daysUntil,
             ])->render();
 
-            Mail::mailer('smtp_custom')->html($body, function ($message) use ($user, $subject) {
+            Mail::html($body, function ($message) use ($user, $subject) {
                 $message->to($user->email, $user->name)->subject($subject);
             });
 
             Log::info("[CheckRenewals] Reminder sent to {$user->email} for subscription [{$subscription->name}] (type: {$type})");
             $this->info("  → Email sent to {$user->email}");
+            
+            $subscription->update(['last_notified_at' => Carbon::today()]);
         } catch (\Exception $e) {
             Log::error("[CheckRenewals] Failed to send reminder for [{$subscription->name}]: " . $e->getMessage());
             $this->error("  → Failed to send email to {$user->email}: " . $e->getMessage());

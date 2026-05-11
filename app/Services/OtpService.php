@@ -81,14 +81,14 @@ class OtpService
         ])->render();
 
         try {
-            Mail::html($body, function ($message) use ($email, $subject) {
-                $message->to($email)->subject($subject);
-            });
+            dispatch(function () use ($email, $subject, $body, $otp, $purposeLabel) {
+                \Illuminate\Support\Facades\Mail::html($body, function ($message) use ($email, $subject) {
+                    $message->to($email)->subject($subject);
+                });
 
-            Log::info("OTP Email sent to {$email} [{$purposeLabel}]");
-                
-            Log::info("[OTP LOG] for {$email}: {$otp}"); 
-
+                \Illuminate\Support\Facades\Log::info("OTP Email sent to {$email} [{$purposeLabel}]");
+                \Illuminate\Support\Facades\Log::info("[OTP LOG] for {$email}: {$otp}"); 
+            })->afterResponse();
         } catch (\Exception $e) {
             Log::error("OTP Email delivery failed for {$email}: " . $e->getMessage());
             Log::info("[DEV FALLBACK] OTP for {$email}: {$otp}");

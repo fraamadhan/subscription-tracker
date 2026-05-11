@@ -25,24 +25,6 @@ class DashboardController extends Controller
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
 
-        // Ensure user has some default categories if none exist
-        if ($user->categories()->count() === 0) {
-            $user->categories()->createMany([
-                ['name' => 'Entertainment', 'color_hex' => '#ef4444'],
-                ['name' => 'Software', 'color_hex' => '#3b82f6'],
-                ['name' => 'Utilities', 'color_hex' => '#10b981'],
-                ['name' => 'Design', 'color_hex' => '#06b6d4'],
-            ]);
-        }
-
-        // Ensure user has some default payment methods if none exist
-        if ($user->paymentMethods()->count() === 0) {
-            $user->paymentMethods()->createMany([
-                ['name' => 'BCA Visa'],
-                ['name' => 'GoPay'],
-                ['name' => 'Jago Virtual Card'],
-            ]);
-        }
 
         return Inertia::render('Dashboard', [
             'filters' => [
@@ -71,6 +53,7 @@ class DashboardController extends Controller
                         'paymentMethodId' => $sub->payment_method_id,
                         'note' => $sub->note,
                         'color' => $sub->color_hex ?: '#f59e0b',
+                        'notifyTime' => substr($sub->notify_time ?? '08:00:00', 0, 5),
                     ];
                 }),
             'categories' => $user->categories()->withCount('subscriptions')->get(),

@@ -21,6 +21,8 @@ class Subscription extends Model
         'is_active',
         'note',
         'color_hex',
+        'notify_time',
+        'last_notified_at',
     ];
 
     protected $casts = [

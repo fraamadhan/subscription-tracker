@@ -46,6 +46,19 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($input['password']),
         ]);
 
+        $user->categories()->createMany([
+            ['name' => 'Entertainment', 'color_hex' => '#ef4444'],
+            ['name' => 'Software', 'color_hex' => '#3b82f6'],
+            ['name' => 'Utilities', 'color_hex' => '#10b981'],
+            ['name' => 'Design', 'color_hex' => '#06b6d4'],
+        ]);
+
+        $user->paymentMethods()->createMany([
+            ['name' => 'BCA Visa'],
+            ['name' => 'GoPay'],
+            ['name' => 'Jago Virtual Card'],
+        ]);
+
         $otpService->generateOtp($identifier, 'verification');
 
         Auth::login($user);

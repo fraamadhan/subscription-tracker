@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\FeedbackController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -37,6 +38,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/payment-methods', [PaymentMethodController::class, 'store'])->name('payment_methods.store');
     Route::put('/payment-methods/{paymentMethod}', [PaymentMethodController::class, 'update'])->name('payment_methods.update');
     Route::delete('/payment-methods/{paymentMethod}', [PaymentMethodController::class, 'destroy'])->name('payment_methods.destroy');
+
+    // Feedback Routes
+    Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');
+    Route::post('/feedbacks', [FeedbackController::class, 'store'])->name('feedbacks.store');
 });
 
 Route::middleware('auth')->group(function () {

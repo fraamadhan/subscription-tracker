@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { Link } from '@inertiajs/react';
 
 export default function SidebarNav({ items, mobile = false, onNavigate }) {
     return (
@@ -7,7 +8,7 @@ export default function SidebarNav({ items, mobile = false, onNavigate }) {
                 const Icon = item.icon;
 
                 return (
-                    <a
+                    <Link
                         key={item.label}
                         href={item.href}
                         onClick={onNavigate}
@@ -61,7 +62,7 @@ export default function SidebarNav({ items, mobile = false, onNavigate }) {
                                 {item.badge}
                             </span>
                         )}
-                    </a>
+                    </Link>
                 );
             })}
         </nav>
