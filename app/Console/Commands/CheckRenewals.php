@@ -29,50 +29,68 @@ class CheckRenewals extends Command
      */
     public function handle()
     {
-        $today = Carbon::today();
-        $currentTime = Carbon::now()->format('H:i');
+        try {
+            $today = Carbon::today();
+            $currentTime = Carbon::now()->format('H:i');
 
-        // 1. Overdue Subscriptions (past next_billing_date)
-        $overdue = Subscription::with(['user', 'category', 'paymentMethod'])
-            ->where('next_billing_date', '<', $today)
-            ->where('is_active', true)
-            ->where(function ($query) use ($today, $currentTime) {
-                $query->whereRaw('LEFT(notify_time, 5) <= ?', [$currentTime])
-                      ->where(function ($q) use ($today) {
-                          $q->whereNull('last_notified_at')
-                            ->orWhere('last_notified_at', '<', $today);
-                      });
-            })
-            ->get();
+            Log::info("[CheckRenewals] CRON JOB STARTED.");
+            Log::info("[CheckRenewals] Current Server Time: " . Carbon::now()->toDateTimeString());
+            Log::info("[CheckRenewals] Checking for notify_time <= {$currentTime}");
 
-        foreach ($overdue as $sub) {
-            $this->info("Subscription OVERDUE: {$sub->name} (Due: {$sub->next_billing_date})");
-            $this->sendReminderEmail($sub, 'overdue');
+            // 1. Overdue Subscriptions (past next_billing_date)
+            $overdue = Subscription::with(['user', 'category', 'paymentMethod'])
+                ->where('next_billing_date', '<', $today)
+                ->where('is_active', true)
+                ->where(function ($query) use ($today, $currentTime) {
+                    $query->where('notify_time', '<=', $currentTime . ':59')
+                          ->where(function ($q) use ($today) {
+                              $q->whereNull('last_notified_at')
+                                ->orWhere('last_notified_at', '<', $today);
+                          });
+                })
+                ->get();
+
+            Log::info("[CheckRenewals] Found {$overdue->count()} OVERDUE subscriptions matching criteria.");
+
+            foreach ($overdue as $sub) {
+                $this->info("Subscription OVERDUE: {$sub->name} (Due: {$sub->next_billing_date})");
+                $this->sendReminderEmail($sub, 'overdue');
+            }
+
+            // 2. Upcoming Renewals (H-1 to H-3)
+            $upcoming = Subscription::with(['user', 'category', 'paymentMethod'])
+                ->whereBetween('next_billing_date', [
+                    $today->copy()->addDay(),
+                    $today->copy()->addDays(3)
+                ])
+                ->where('is_active', true)
+                ->where(function ($query) use ($today, $currentTime) {
+                    $query->where('notify_time', '<=', $currentTime . ':59')
+                          ->where(function ($q) use ($today) {
+                              $q->whereNull('last_notified_at')
+                                ->orWhere('last_notified_at', '<', $today);
+                          });
+                })
+                ->get();
+
+            Log::info("[CheckRenewals] Found {$upcoming->count()} UPCOMING subscriptions matching criteria.");
+
+            foreach ($upcoming as $sub) {
+                $daysUntil = $today->diffInDays(Carbon::parse($sub->next_billing_date));
+                $this->info("Subscription RENEWING IN {$daysUntil} DAYS: {$sub->name}");
+                $this->sendReminderEmail($sub, 'upcoming', $daysUntil);
+            }
+
+            $this->info('Renewal check completed.');
+            Log::info("[CheckRenewals] CRON JOB COMPLETED.");
+            
+            return 0;
+        } catch (\Exception $e) {
+            Log::error("[CheckRenewals] FATAL ERROR: " . $e->getMessage());
+            Log::error($e->getTraceAsString());
+            $this->error("Fatal Error: " . $e->getMessage());
+            return 1;
         }
-
-        // 2. Upcoming Renewals (H-1 to H-3)
-        $upcoming = Subscription::with(['user', 'category', 'paymentMethod'])
-            ->whereBetween('next_billing_date', [
-                $today->copy()->addDay(),
-                $today->copy()->addDays(3)
-            ])
-            ->where('is_active', true)
-            ->where(function ($query) use ($today, $currentTime) {
-                $query->whereRaw('LEFT(notify_time, 5) <= ?', [$currentTime])
-                      ->where(function ($q) use ($today) {
-                          $q->whereNull('last_notified_at')
-                            ->orWhere('last_notified_at', '<', $today);
-                      });
-            })
-            ->get();
-
-        foreach ($upcoming as $sub) {
-            $daysUntil = $today->diffInDays(Carbon::parse($sub->next_billing_date));
-            $this->info("Subscription RENEWING IN {$daysUntil} DAYS: {$sub->name}");
-            $this->sendReminderEmail($sub, 'upcoming', $daysUntil);
-        }
-
-        $this->info('Renewal check completed.');
     }
 
     /**
