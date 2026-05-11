@@ -453,69 +453,71 @@ export default function Dashboard({
                     ))}
                 </section>
 
-                <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.9fr)]">
-                    <SectionPanel
-                        id="subscriptions"
-                        eyebrow="Overview"
-                        title="Active subscriptions"
-                        description="View and manage your active subscription plans, pricing, and upcoming renewal dates."
-                        actions={
-                            <div className="flex flex-wrap items-center gap-2">
-                                <button
-                                    onClick={() => setIsPaymentModalOpen(true)}
-                                    className="inline-flex items-center rounded-2xl border border-slate-200 dark:border-white/10 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-gray-300 transition hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-white/10"
-                                >
-                                    Map payment methods
-                                </button>
-                                <button
-                                    onClick={handleAdd}
-                                    className="inline-flex items-center gap-2 rounded-2xl bg-amber-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-amber-700"
-                                >
-                                    <Plus className="h-4 w-4" />
-                                    Add <span className="hidden sm:inline">Subscription</span>
-                                </button>
-                            </div>
-                        }
-                    >
-                        <div className="grid gap-4 lg:grid-cols-2">
-                            {currentSubscriptions.map((subscription) => (
-                                <SubscriptionCard
-                                    key={subscription.name}
-                                    subscription={subscription}
-                                    onEdit={handleEdit}
-                                    onDelete={handleDeleteClick}
-                                />
-                            ))}
+                {/* 1. MAIN SUBSCRIPTIONS SECTION - Full width for focus */}
+                <SectionPanel
+                    id="subscriptions"
+                    eyebrow="Inventory"
+                    title="Active subscriptions"
+                    description="View and manage your active subscription plans and pricing."
+                    actions={
+                        <div className="flex flex-wrap items-center gap-2">
+                            <button
+                                onClick={() => setIsPaymentModalOpen(true)}
+                                className="inline-flex items-center rounded-2xl border border-slate-200 dark:border-white/10 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-gray-300 transition hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-white/10"
+                            >
+                                Map payment methods
+                            </button>
+                            <button
+                                onClick={handleAdd}
+                                className="inline-flex items-center gap-2 rounded-2xl bg-amber-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-amber-700"
+                            >
+                                <Plus className="h-4 w-4" />
+                                Add <span className="hidden sm:inline">Subscription</span>
+                            </button>
                         </div>
+                    }
+                >
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {currentSubscriptions.map((subscription) => (
+                            <SubscriptionCard
+                                key={subscription.name}
+                                subscription={subscription}
+                                onEdit={handleEdit}
+                                onDelete={handleDeleteClick}
+                            />
+                        ))}
+                    </div>
 
-                        {totalPages > 1 && (
-                            <div className="mt-6 flex items-center justify-between border-t border-slate-100 dark:border-white/10 pt-4">
-                                <button
-                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                    disabled={currentPage === 1}
-                                    className="text-sm font-medium text-slate-500 hover:text-slate-700 disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-300"
-                                >
-                                    Previous
-                                </button>
-                                <span className="text-sm text-slate-500 dark:text-gray-400">
-                                    Page {currentPage} of {totalPages}
-                                </span>
-                                <button
-                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="text-sm font-medium text-slate-500 hover:text-slate-700 disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-300"
-                                >
-                                    Next
-                                </button>
-                            </div>
-                        )}
-                    </SectionPanel>
+                    {totalPages > 1 && (
+                        <div className="mt-6 flex items-center justify-between border-t border-slate-100 dark:border-white/10 pt-4">
+                            <button
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                className="text-sm font-medium text-slate-500 hover:text-slate-700 disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-300"
+                            >
+                                Previous
+                            </button>
+                            <span className="text-sm text-slate-500 dark:text-gray-400">
+                                Page {currentPage} of {totalPages}
+                            </span>
+                            <button
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                className="text-sm font-medium text-slate-500 hover:text-slate-700 disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-300"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
+                </SectionPanel>
 
+                <div className="grid gap-6 lg:grid-cols-2">
+                    {/* 2. CATEGORIES BREAKDOWN */}
                     <SectionPanel
                         id="categories"
                         eyebrow="Analytics"
-                        title="Category spending breakdown"
-                        description="See exactly how much you are spending across different categories."
+                        title="Spending breakdown"
+                        description="Spending across different categories."
                         actions={
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-1 rounded-2xl border border-slate-200 dark:border-white/10 p-1 bg-slate-50 dark:bg-white/5">
@@ -568,14 +570,13 @@ export default function Dashboard({
                             ))}
                         </div>
                     </SectionPanel>
-                </div>
 
-                <div className="grid gap-6 xl:grid-cols-[minmax(320px,0.9fr)_minmax(0,1.35fr)]">
+                    {/* 3. RENEWAL REMINDERS */}
                     <SectionPanel
                         id="reminders"
                         eyebrow="Notifications"
-                        title="Renewal reminders"
-                        description="Keep track of upcoming renewals so you're never caught off guard."
+                        title="Upcoming renewals"
+                        description="Stay ahead of your subscription schedule."
                     >
                         <div className="space-y-4">
                             {reminderMessages.map((message, index) => (
@@ -588,89 +589,91 @@ export default function Dashboard({
                             ))}
                         </div>
                     </SectionPanel>
+                </div>
 
-                    <SectionPanel
-                        id="billing-history"
-                        eyebrow="History"
-                        title="Billing timeline"
-                        description="Review your past payments and track your subscription history over time."
-                    >
-                        <ul className="space-y-4">
-                            {billingHistoryItems.map((item) => (
-                                <BillingActivityItem
-                                    key={item.id || item.service}
-                                    item={item}
-                                />
-                            ))}
-                        </ul>
+                {/* 4. BILLING HISTORY - Full width or large span */}
+                <SectionPanel
+                    id="billing-history"
+                    eyebrow="History"
+                    title="Billing timeline"
+                    description="Review your past payments and track your subscription history."
+                >
+                    <ul className="space-y-4">
+                        {billingHistoryItems.map((item) => (
+                            <BillingActivityItem
+                                key={item.id || item.service}
+                                item={item}
+                            />
+                        ))}
+                    </ul>
 
-                        {billingHistory?.links && billingHistory?.links?.length > 3 && (
-                            <div className="mt-8 flex items-center justify-center gap-2">
-                                {billingHistory.links.map((link, i) => {
-                                    const baseClass = "px-4 py-2 text-sm font-semibold rounded-xl border transition-colors";
-                                    const disabledClass = "text-slate-300 dark:text-gray-600 border-slate-100 dark:border-white/5 cursor-not-allowed";
-                                    const enabledClass = "text-slate-600 dark:text-gray-400 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5";
+                    {billingHistory?.links && billingHistory?.links?.length > 3 && (
+                        <div className="mt-8 flex items-center justify-center gap-2">
+                            {billingHistory.links.map((link, i) => {
+                                const baseClass = "px-4 py-2 text-sm font-semibold rounded-xl border transition-colors";
+                                const disabledClass = "text-slate-300 dark:text-gray-600 border-slate-100 dark:border-white/5 cursor-not-allowed";
+                                const enabledClass = "text-slate-600 dark:text-gray-400 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5";
 
-                                    const handlePageClick = (url) => {
-                                        if (!url) return;
-                                        router.visit(url, {
-                                            preserveScroll: true,
-                                            preserveState: true,
-                                            only: ['billingHistory'],
-                                        });
-                                    };
+                                const handlePageClick = (url) => {
+                                    if (!url) return;
+                                    router.visit(url, {
+                                        preserveScroll: true,
+                                        preserveState: true,
+                                        only: ['billingHistory'],
+                                    });
+                                };
 
-                                    if (link.label.includes('Previous')) {
-                                        return (
-                                            <button
-                                                key={i}
-                                                onClick={() => handlePageClick(link.url)}
-                                                disabled={!link.url}
-                                                className={cn(baseClass, link.url ? enabledClass : disabledClass)}
-                                            >
-                                                ← Previous
-                                            </button>
-                                        );
-                                    }
-
-                                    if (link.label.includes('Next')) {
-                                        return (
-                                            <button
-                                                key={i}
-                                                onClick={() => handlePageClick(link.url)}
-                                                disabled={!link.url}
-                                                className={cn(baseClass, link.url ? enabledClass : disabledClass)}
-                                            >
-                                                Next →
-                                            </button>
-                                        );
-                                    }
-
-                                    // Numbered page links
-                                    const numBase = "hidden sm:flex h-10 w-10 items-center justify-center text-sm font-semibold rounded-xl border transition-all";
-                                    const activeClass = "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-lg";
-                                    const inactiveClass = "text-slate-600 dark:text-gray-400 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5";
-
+                                if (link.label.includes('Previous')) {
                                     return (
                                         <button
                                             key={i}
                                             onClick={() => handlePageClick(link.url)}
                                             disabled={!link.url}
-                                            className={cn(numBase, link.active ? activeClass : inactiveClass)}
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                        />
+                                            className={cn(baseClass, link.url ? enabledClass : disabledClass)}
+                                        >
+                                            ← Previous
+                                        </button>
                                     );
-                                })}
-                            </div>
-                        )}
-                    </SectionPanel>
-                </div>
+                                }
 
+                                if (link.label.includes('Next')) {
+                                    return (
+                                        <button
+                                            key={i}
+                                            onClick={() => handlePageClick(link.url)}
+                                            disabled={!link.url}
+                                            className={cn(baseClass, link.url ? enabledClass : disabledClass)}
+                                        >
+                                            Next →
+                                        </button>
+                                    );
+                                }
+
+                                // Numbered page links
+                                const numBase = "hidden sm:flex h-10 w-10 items-center justify-center text-sm font-semibold rounded-xl border transition-all";
+                                const activeClass = "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-lg";
+                                const inactiveClass = "text-slate-600 dark:text-gray-400 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5";
+
+                                return (
+                                    <button
+                                        key={i}
+                                        onClick={() => handlePageClick(link.url)}
+                                        disabled={!link.url}
+                                        className={cn(numBase, link.active ? activeClass : inactiveClass)}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                );
+                            })}
+                        </div>
+                    )}
+                </SectionPanel>
+
+                {/* 5. PAYMENT METHODS */}
                 <SectionPanel
                     id="payment-methods"
                     eyebrow="Settings"
                     title="Payment methods"
-                    description="Manage the cards and e-wallets used to pay for your subscriptions."
+                    description="Manage the cards and e-wallets used for your payments."
                     actions={
                         <button
                             onClick={() => setIsPaymentModalOpen(true)}
@@ -681,7 +684,7 @@ export default function Dashboard({
                         </button>
                     }
                 >
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                         {activePaymentMethods.map((method) => (
                             <article
                                 key={method.name}
