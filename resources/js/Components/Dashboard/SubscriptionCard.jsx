@@ -38,29 +38,22 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
     };
 
     return (
-        <article className="rounded-[28px] border border-slate-100 dark:border-white/5 bg-slate-50/90 dark:bg-warm-dark-card p-6 transition-transform duration-200 hover:-translate-y-1 shadow-sm">
+        <article className="flex flex-col h-full rounded-[28px] border border-slate-100 dark:border-white/5 bg-slate-50/90 dark:bg-warm-dark-card p-6 transition-transform duration-200 hover:-translate-y-1 shadow-sm">
             <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3">
-                        <span
-                            className="h-3.5 w-3.5 rounded-full shrink-0"
-                            style={{ backgroundColor: subscription.color }}
-                        />
-                        <p className="text-lg font-bold text-slate-950 dark:text-white truncate">
-                            {subscription.name}
-                        </p>
-                    </div>
-                    <p className="mt-1 text-sm font-medium text-slate-500 dark:text-gray-400">
-                        {subscription.category}
+                <div className="flex items-center gap-3">
+                    <span
+                        className="h-3.5 w-3.5 rounded-full shrink-0"
+                        style={{ backgroundColor: subscription.color }}
+                    />
+                    <p className="text-lg font-bold text-slate-950 dark:text-white leading-tight">
+                        {subscription.name}
                     </p>
                 </div>
-                <div className="flex items-center gap-1.5 -mr-1">
-                    <span className="hidden sm:inline-block rounded-full bg-white dark:bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500 dark:text-gray-300">
-                        {subscription.cycle}
-                    </span>
+                
+                <div className="-mr-2 -mt-2 shrink-0">
                     <Dropdown>
                         <Dropdown.Trigger>
-                            <button className="flex h-10 w-10 items-center justify-center rounded-2xl text-slate-400 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-all hover:text-slate-600 dark:hover:text-white">
+                            <button className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-all hover:text-slate-600 dark:hover:text-white">
                                 <MoreHorizontal className="h-5 w-5" />
                             </button>
                         </Dropdown.Trigger>
@@ -84,34 +77,43 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
                 </div>
             </div>
 
-            <div className="mt-6 grid gap-3.5 text-sm text-slate-600 dark:text-gray-300">
-                <div className="flex items-center gap-3">
-                    <CreditCard className="h-4 w-4 text-slate-400 dark:text-gray-500" />
-                    <span className="font-medium">
+            <div className="mt-3 flex items-center gap-2.5">
+                <span className="rounded-full bg-slate-200/50 dark:bg-white/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-gray-300">
+                    {subscription.cycle}
+                </span>
+                <span className="text-sm font-medium text-slate-500 dark:text-gray-400">
+                    {subscription.category}
+                </span>
+            </div>
+
+            <div className="mt-6 flex-1 grid gap-3.5 text-sm text-slate-600 dark:text-gray-300 content-start">
+                <div className="flex items-start gap-3">
+                    <CreditCard className="h-5 w-5 text-slate-400 dark:text-gray-500 shrink-0" />
+                    <span className="font-medium leading-tight">
                         {formatPrice(subscription.price, subscription.currency)} / {subscription.cycle} via {subscription.paymentMethod}
                     </span>
                 </div>
-                <div className="flex items-center gap-3">
-                    <CalendarDays className="h-4 w-4 text-slate-400 dark:text-gray-500" />
-                    <span className="font-medium">
+                <div className="flex items-start gap-3">
+                    <CalendarDays className="h-5 w-5 text-slate-400 dark:text-gray-500 shrink-0" />
+                    <span className="font-medium leading-tight">
                         Next bill on {subscription.nextBilling ? new Date(subscription.nextBilling).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Pending...'}
                     </span>
                 </div>
                 {subscription.note && (
-                    <div className="flex items-center gap-3">
-                        <Layers3 className="h-4 w-4 text-slate-400 dark:text-gray-500" />
-                        <span className="line-clamp-1">{subscription.note}</span>
+                    <div className="flex items-start gap-3">
+                        <Layers3 className="h-5 w-5 text-slate-400 dark:text-gray-500 shrink-0" />
+                        <span className="font-medium leading-tight line-clamp-2">{subscription.note}</span>
                     </div>
                 )}
             </div>
             
-            <div className="mt-8 flex items-center justify-between gap-3">
+            <div className="mt-8 flex flex-col gap-3">
                 {isDueSoon ? (
                     <button
                         onClick={handleMarkAsPaid}
                         disabled={isLoading}
                         className={cn(
-                            "flex flex-1 items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-sm font-bold transition-all shadow-sm text-white",
+                            "w-full flex items-center justify-center gap-2 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all shadow-sm text-white",
                             isOverdue 
                                 ? "bg-rose-500 hover:bg-rose-600 shadow-rose-200 dark:shadow-none"
                                 : "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-200 dark:shadow-none",
@@ -119,31 +121,33 @@ export default function SubscriptionCard({ subscription, onEdit, onDelete }) {
                         )}
                     >
                         <CheckCircle2 className="h-4 w-4 shrink-0" />
-                        <span className="whitespace-nowrap">{isLoading ? 'Processing...' : (isOverdue ? 'Pay Overdue' : 'Mark as Paid')}</span>
+                        <span>{isLoading ? 'Processing...' : (isOverdue ? 'Pay Overdue' : 'Mark as Paid')}</span>
                     </button>
                 ) : (
-                    <div className="flex flex-1 items-center gap-2 rounded-2xl bg-slate-100 dark:bg-white/5 px-4 py-3.5 border border-slate-200 dark:border-white/5">
+                    <div className="w-full flex items-center justify-center gap-2 rounded-2xl bg-slate-100 dark:bg-white/5 px-4 py-3.5 border border-slate-200 dark:border-white/5">
                         <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                        <span className="text-xs font-bold text-slate-600 dark:text-gray-400">
+                        <span className="text-sm font-bold text-slate-600 dark:text-gray-400">
                             Scheduled
                         </span>
                     </div>
                 )}
                 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                     <button
                         onClick={() => onDelete(subscription)}
-                        className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-transparent text-rose-600 dark:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all shadow-sm hover:shadow-md"
+                        className="flex-1 flex items-center justify-center gap-2 h-11 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-transparent text-rose-600 dark:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all shadow-sm hover:shadow-md"
                         title="Delete subscription"
                     >
                         <Trash2 className="h-4 w-4" />
+                        <span className="text-xs font-bold">Delete</span>
                     </button>
                     <button
                         onClick={() => onEdit(subscription)}
-                        className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-transparent text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/5 transition-all shadow-sm hover:shadow-md"
+                        className="flex-1 flex items-center justify-center gap-2 h-11 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-transparent text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/5 transition-all shadow-sm hover:shadow-md"
                         title="Edit subscription"
                     >
                         <Pencil className="h-4 w-4" />
+                        <span className="text-xs font-bold">Edit</span>
                     </button>
                 </div>
             </div>
