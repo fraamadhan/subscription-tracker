@@ -39,6 +39,25 @@ export default function Dashboard({
         }).format(amount).replace('Rp', 'Rp ');
     };
 
+    const formatCurrency = (amount, currency) => {
+        const locales = {
+            'IDR': 'id-ID',
+            'USD': 'en-US',
+            'GBP': 'en-GB'
+        };
+        const formatter = new Intl.NumberFormat(locales[currency] || 'id-ID', {
+            style: 'currency',
+            currency: currency,
+            minimumFractionDigits: currency === 'IDR' ? 0 : 2,
+        });
+        
+        let formatted = formatter.format(amount);
+        if (currency === 'IDR') {
+            formatted = formatted.replace('Rp', 'Rp ');
+        }
+        return formatted;
+    };
+
     const handleFilterChange = (key, value) => {
         router.get(route('dashboard'), { ...filters, [key]: value }, { preserveState: true, preserveScroll: true });
     };
@@ -185,11 +204,12 @@ export default function Dashboard({
         const catSubscriptions = subscriptions.filter(sub => String(sub.categoryId) === String(cat.id));
         const catSpendInIdr = catSubscriptions.reduce((acc, sub) => acc + getNormalizedPrice(sub), 0);
         
+        const displaySpend = convertCurrency(catSpendInIdr, 'IDR', displayCurrency);
         const rawCoverage = overallTotalNormalized > 0 ? (catSpendInIdr / overallTotalNormalized) * 100 : 0;
         
         return {
             label: cat.name,
-            amount: formatIDR(catSpendInIdr),
+            amount: formatCurrency(displaySpend, displayCurrency),
             coverage: (rawCoverage > 0 && rawCoverage < 1 ? rawCoverage.toFixed(1) : Math.round(rawCoverage)) + '%',
             color_hex: cat.color_hex,
             width: (overallTotalNormalized > 0 && catSpendInIdr > 0) ? `${Math.max(2, (catSpendInIdr / overallTotalNormalized) * 100)}%` : '0%',
